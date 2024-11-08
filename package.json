@@ -1,0 +1,23 @@
+{
+  "name": "votos-nodejs",
+  "version": "1.0.0",
+  "description": "Este proyecto crea una app donde un usuario se registra y logea, al ingresar al panel puede crear post, editarlo y eliminarlo, en la pagina de inicio los visitantes puden ver los post y darle me gusta o no me gusta, con un sistema de votacion los que tengan mas megustas se posicionan en los primeros lugares de los post.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "express-validator": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7",
+    "tailwindcss": "^3.4.14"
+  }
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tarjetas</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Tarjetas</h1>
+    <form action="/create" method="POST">
+        <input type="text" name="content" placeholder="Escribe tu tarjeta" required>
+        <button type="submit">Crear Tarjeta</button>
+    </form>
+    <div id="cards">
+        <% cards.forEach(card => { %>
+            <div class="card">
+                <p><%= card.content %></p>
+                <p>Likes: <%= card.likes %></p>
+                <form action="/like" method="POST">
+                    <input type="hidden" name="id" value="<%= card.id %>">
+                    <button type="submit">Me gusta</button>
+                </form>
+                <form action="/update" method="POST">
+                    <input type="hidden" name="id" value="<%= card.id %>">
+                    <input type="text" name="content" placeholder="Actualizar tarjeta" required>
+                    <button type="submit">Actualizar</button>
+                </form>
+                <form action="/delete" method="POST">
+                    <input type="hidden" name="id" value="<%= card.id %>">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </div>
+        <% }) %>
+    </div>
+    <script src="/public/script.js"></script>
+</body>
+</html>
