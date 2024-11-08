@@ -8,4 +8,17 @@ router.post('/update', cardController.updateCard);
 router.post('/delete', cardController.deleteCard);
 router.post('/like', cardController.likeCard);
 
+const db = require('../models/db');
+
+exports.getCards = (req, res) => {
+    db.all(`SELECT * FROM cards ORDER BY likes DESC`, (err, rows) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error al obtener las cards');
+        }
+        // Asegúrate de que estás pasando 'rows' como 'cards'
+        res.render('index', { cards: rows });
+    });
+};
+
 module.exports = router;
