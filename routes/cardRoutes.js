@@ -7,6 +7,8 @@ router.post('/create', cardController.createCard);
 router.post('/update', cardController.updateCard);
 router.post('/delete', cardController.deleteCard);
 router.post('/like', cardController.likeCard);
+// Ruta para manejar el dislike
+router.post('/no-like', cardController.dislikeCard);
 
 const db = require('../models/db');
 

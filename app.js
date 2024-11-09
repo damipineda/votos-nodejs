@@ -29,11 +29,15 @@ io.on('connection', (socket) => {
         io.emit('update-likes', cardId);
     });
 
+    // Escuchar eventos de 'dislike'
+    socket.on('dislike', (cardId) => {
+        io.emit('update-deslikes', cardId);
+    });
+
     socket.on('disconnect', () => {
         console.log('Cliente desconectado');
     });
 });
-
 // Rutas
 app.use('/', cardRoutes);
 

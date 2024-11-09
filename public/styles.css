@@ -3,12 +3,14 @@ body {
 }
 
 .card {
-    border: #ccc;
-    border: 1px solid #ccc;
+    border: 1px solid #0004;
     padding: 10px;
     margin: 10px 0;
+    justify-content: center center;
 }
-
+.card2{
+    display: flex;
+}
 button {
     margin-top: 5px;
 }

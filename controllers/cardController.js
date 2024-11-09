@@ -39,3 +39,11 @@ exports.likeCard = (req, res) => {
         res.redirect('/');
     });
 };
+
+exports.dislikeCard = (req, res) => {
+    const { id } = req.body;
+    db.run(`UPDATE cards SET deslikes = deslikes + 1 WHERE id = ?`, [id], function(err) {
+        if (err) throw err;
+        res.redirect('/');
+    });
+};
