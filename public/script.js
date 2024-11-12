@@ -1,24 +1,41 @@
 const socket = io();
 
-socket.on('update-likes', (cardId) => {
+socket.on('update-likes', (data) => {
+    const { cardId, totalLikes } = data;
     const cardElement = document.getElementById(`card-${cardId}`);
     const likesElement = cardElement.querySelector('.likes-count');
-    const currentLikes = parseInt(likesElement.innerText);
-    likesElement.innerText = currentLikes + 1; // Incrementar el conteo de likes
-});
-socket.on('update-deslikes', (cardId) => {
-    const cardElement = document.getElementById(`card-${cardId}`);
-    const deslikesElement = cardElement.querySelector('.deslikes-count');
-    const currentDeslikes = parseInt(deslikesElement.innerText);
-    deslikesElement.innerText = currentDeslikes + 1; // Incrementar el conteo de deslikes
+    likesElement.innerText = totalLikes;
+    
+    // Reordenar cards automáticamente
+    reorderCards();
 });
 
-// Función para emitir el evento de 'like'
+socket.on('update-deslikes', (data) => {
+    const { cardId, totalDeslikes } = data;
+    const cardElement = document.getElementById(`card-${cardId}`);
+    const deslikesElement = cardElement.querySelector('.deslikes-count');
+    deslikesElement.innerText = totalDeslikes;
+});
+
+function reorderCards() {
+    const cardsContainer = document.getElementById('cards');
+    const cards = Array.from(cardsContainer.children);
+    
+    // Ordenar por likes de mayor a menor
+    cards.sort((a, b) => {
+        const likesA = parseInt(a.querySelector('.likes-count').innerText);
+        const likesB = parseInt(b.querySelector('.likes-count').innerText);
+        return likesB - likesA;
+    });
+
+    // Reemplazar el orden de los elementos
+    cards.forEach(card => cardsContainer.appendChild(card));
+}
+
 function likeCard(cardId) {
     socket.emit('like', cardId);
 }
 
-// Función para emitir el evento de 'dislike'
 function dislikeCard(cardId) {
     socket.emit('dislike', cardId);
 }

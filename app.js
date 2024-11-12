@@ -9,6 +9,9 @@ const PORT = process.env.PORT || 3000;
 const http = require('http');
 const socketIo = require('socket.io');
 
+// Importa la base de datos
+const db = require('./models/db');
+
 const server = http.createServer(app);
 const io = socketIo(server);
 //auth
@@ -38,6 +41,52 @@ io.on('connection', (socket) => {
         console.log('Cliente desconectado');
     });
 });
+
+//modificaciones
+io.on('connection', (socket) => {
+    socket.on('like', (cardId) => {
+        db.run(`UPDATE cards SET likes = likes + 1 WHERE id = ?`, [cardId], (err) => {
+            if (err) {
+                console.error('Error al incrementar likes:', err);
+                return;
+            }
+            
+            // Obtener el total de likes actualizado
+            db.get(`SELECT likes FROM cards WHERE id = ?`, [cardId], (err, row) => {
+                if (!err && row) {
+                    io.emit('update-likes', { 
+                        cardId: cardId, 
+                        totalLikes: row.likes 
+                    });
+                }
+            });
+        });
+    });
+
+    socket.on('dislike', (cardId) => {
+        db.run(`UPDATE cards SET deslikes = deslikes + 1 WHERE id = ?`, [cardId], (err) => {
+            if (err) {
+                console.error('Error al incrementar deslikes:', err);
+                return;
+            }
+            
+            // Obtener el total de deslikes actualizado
+            db.get(`SELECT deslikes FROM cards WHERE id = ?`, [cardId], (err, row) => {
+                if (!err && row) {
+                    io.emit('update-deslikes', { 
+                        cardId: cardId, 
+                        totalDeslikes: row.deslikes 
+                    });
+                }
+            });
+        });
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Cliente desconectado');
+    });
+});
+
 // Rutas
 app.use('/', cardRoutes);
 

@@ -17,12 +17,13 @@ db.serialize(() => {
 
     // Crear la tabla cards si no existe
     db.run(`CREATE TABLE IF NOT EXISTS cards (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId INTEGER,
-        content TEXT NOT NULL,
-        likes INTEGER DEFAULT 0,
-        deslikes INTEGER DEFAULT 0,
-        FOREIGN KEY (userId) REFERENCES users(id)
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            userId INTEGER,
+            title TEXT,
+            description TEXT,
+            content TEXT NOT NULL,
+            likes INTEGER DEFAULT 0,
+            deslikes INTEGER DEFAULT 0
     )`, (err) => {
         if (err) {
             console.error("Error al crear la tabla 'cards':", err.message);

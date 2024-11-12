@@ -2,65 +2,239 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Tarjetas</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Votos App</title>
+    <link rel="stylesheet" href="/public/styles.css">
+    <link rel="stylesheet" href="/output.css">
 </head>
-<body>
-    <h1>Tarjetas</h1>
-    <form action="/create" method="POST">
-        <input type="text" name="content" placeholder="Escribe tu tarjeta" required>
-        <button type="submit">Crear Tarjeta</button>
-    </form>
-    <div id="cards">
-        <% cards.forEach(card => { %>
-            <div class="card">
-                <p><%= card.content %></p>
-                <p>Likes: <%= card.likes %></p>
-                <p>No me gusta: <%= card.deslikes %></p>
-                <div class="card2">
-                    <form action="/like" method="POST"> <!--boton me gusta-->
-                        <input type="hidden" name="id" value="<%= card.id %>">
-                        <button type="submit">Me gusta</button>
-                    </form>
-                    <form action="/no-like" method="POST"> <!--boton no me gusta-->
-                        <input type="hidden" name="id" value="<%= card.id %>">
-                        <button type="submit">No me gusta</button>
-                    </form>
-                    <form action="/update" method="POST">
-                        <input type="hidden" name="id" value="<%= card.id %>">
-                        <input type="text" name="content" placeholder="Actualizar tarjeta" required>
-                        <button type="submit">Actualizar</button>
-                    </form>
-                    <form action="/delete" method="POST">
-                        <input type="hidden" name="id" value="<%= card.id %>">
-                        <button type="submit">Eliminar</button>
-                    </form>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="create-card-form">
+            <form action="/create" method="POST">
+                <input 
+                    type="text" 
+                    name="title" 
+                    placeholder="Título" 
+                    class="w-full p-2 mb-2 border rounded"
+                    required
+                >
+                <textarea 
+                    name="description" 
+                    placeholder="Descripción" 
+                    class="w-full p-2 mb-2 border rounded"
+                    rows="2"
+                ></textarea>
+                <textarea 
+                    name="content" 
+                    placeholder="Escribe tu contenido" 
+                    class="w-full p-2 mb-2 border rounded"
+                    rows="4"
+                    required
+                ></textarea>
+                <div class="text-right">
+                    <button 
+                        type="submit" 
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                        Publicar
+                    </button>
                 </div>
+            </form>
+        </div>
 
-            </div>
-        <% }) %>
-    </div>
-
-    <div class="cards-container">
-        <% if (cards && cards.length > 0) { %>
+        <div id="cards">
             <% cards.forEach(card => { %>
-                <div class="card" id="card-<%= card.id %>">
+                <div class="card relative" id="card-<%= card.id %>">
+                    <div class="absolute top-2 right-8"> <!--Tres puntos para deplegabe-->
+                        <button 
+                            onclick="toggleDropdown('<%= card.id %>')" 
+                            class="text-gray-500 hover:text-gray-700 focus:outline-none"
+                        >
+                            &#8230;
+                        </button>
+                        
+                        <div 
+                            id="dropdown-<%= card.id %>" 
+                            class="hidden absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-10"
+                        >
+                            <button 
+                                type="button" 
+                                onclick="openEditModal('<%= card.id %>', `<%= card.content %>`)" 
+                                class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                            >
+                                Editar
+                            </button>
+                            <button 
+                                type="button" 
+                                onclick="deleteCard('<%= card.id %>')" 
+                                class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-2">
+                        <% if (card.title) { %>
+                            <h2 class="font-bold text-xl"><%= card.title %></h2>
+                        <% } %>
+                    </div>
+                    
+                    <% if (card.description) { %>
+                        <p class="text-gray-600 mb-2"><%= card.description %></p>
+                    <% } %>
+                    
                     <p><%= card.content %></p>
-                    <p class="likes-count">Likes: <%= card.likes %></p>
-                    <p class="deslikes-count">No me gusta: <%= card.deslikes %></p>
-                    <form class="like-form" data-card-id="<%= card.id %>">
-                        <button type="submit">Me gusta</button>
-                    </form>
-                    <form class="dislike-form" data-card-id="<%= card.id %>">
-                        <button type="submit">No me gusta</button>
-                    </form>
+
+                    <div class="card-actions">
+                        <form 
+                            action="/like" 
+                            method="POST" 
+                            class="like-form" 
+                            data-card-id="<%= card.id %>"
+                        >
+                            <input type="hidden" name="id" value="<%= card.id %>">
+                            <div class="reaction-container">
+                                <span class="reaction-button" onclick="likeCard('<%= card.id %>')">👍</span>
+                                <span class="likes-count"><%= card.likes || 0 %></span>
+                            </div>
+                        </form>
+
+                        <form 
+                            action="/no-like" 
+                            method="POST" 
+                            class="dislike-form" 
+                            data-card-id="<%= card.id %>"
+                        >
+                            <input type="hidden" name="id" value="<%= card.id %>">
+                            <div class="reaction-container">
+                                <span class="reaction-button" onclick="dislikeCard('<%= card.id %>')">👎</span>
+                                <span class="deslikes-count"><%= card.deslikes || 0 %></span>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             <% }) %>
-        <% } else { %>
-            <p>No hay cards disponibles.</p>
-        <% } %>
+        </div>
     </div>
 
-    <script src="/public/script.js"></script>
+    <script>
+        function toggleDropdown(cardId) {
+            const dropdown = document.getElementById(`dropdown-${cardId}`);
+            dropdown.classList.toggle('hidden');
+            
+            // Cerrar otros dropdowns
+            const allDropdowns = document.querySelectorAll('[id^="dropdown-"]');
+            allDropdowns.forEach(drop => {
+                if (drop.id !== `dropdown-${cardId}`) {
+                    drop.classList.add('hidden');
+                }
+            });
+        }
+        
+        function openEditModal(cardId, content) {
+            // Obtener el título de la tarjeta (pero no lo modificaremos)
+            const cardElement = document.getElementById(`card-${cardId}`);
+            const titleElement = cardElement.querySelector('h2');
+            const currentTitle = titleElement ? titleElement.textContent.trim() : '';
+        
+            // Crear un modal personalizado centrado
+            const modalHtml = `
+                <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white p-6 rounded-lg shadow-xl w-96 text-center">
+                        <h2 class="text-xl font-bold mb-4">Editar Contenido</h2>
+                        <textarea 
+                            id="editContent" 
+                            class="w-full p-2 mb-4 border rounded" 
+                            rows="4"
+                            placeholder="Contenido"
+                        >${content}</textarea>
+                        <div class="flex justify-center space-x-4">
+                            <button 
+                                type="button" 
+                                onclick="closeEditModal()" 
+                                class="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                            >
+                                Cancelar
+                            </button>
+                            <button 
+                                type="button" 
+                                onclick="saveEditedCard('${cardId}')" 
+                                class="bg-blue-500 text-white px-4 py-2 rounded"
+                            >
+                                Guardar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        
+            // Insertar el modal en el body
+            const modalDiv = document.createElement('div');
+            modalDiv.innerHTML = modalHtml;
+            document.body.appendChild(modalDiv);
+        }
+        
+        function closeEditModal() {
+            const modal = document.getElementById('editModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function saveEditedCard(cardId) {
+            const newContent = document.getElementById('editContent').value;
+        
+            // Crear un formulario dinámico
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/update';
+        
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = cardId;
+        
+            const contentInput = document.createElement('input');
+            contentInput.type = 'hidden';
+            contentInput.name = 'content';
+            contentInput.value = newContent;
+        
+            form.appendChild(idInput);
+            form.appendChild(contentInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        function deleteCard(cardId) {
+            if (confirm('¿Estás seguro de eliminar esta tarjeta?')) {
+                // Crear un formulario dinámico
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/delete';
+        
+                const idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'id';
+                idInput.value = cardId;
+        
+                form.appendChild(idInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const dropdowns = document.querySelectorAll('[id^="dropdown-"]');
+            dropdowns.forEach(dropdown => {
+                if (!dropdown.closest('.relative').contains(event.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/script.js"></script>
 </body>
 </html>
